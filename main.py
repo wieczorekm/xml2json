@@ -1,4 +1,4 @@
-from src.lexer import *
+from lexer import *
 import sys
 
 if len(sys.argv) == 2 :
@@ -9,6 +9,7 @@ if len(sys.argv) == 2 :
     token = lexer.get_next_token()
     while not isinstance(token, EndOfTextToken):
         print(token)
+        token = lexer.get_next_token()
 
 else:
     print("Usage: python main.py <file_to_parse>")

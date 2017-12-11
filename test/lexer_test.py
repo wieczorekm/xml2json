@@ -1,7 +1,7 @@
 import unittest
 
-from src.lexer import Lexer, LexerException
-from src.token import *
+from lexer import Lexer, LexerException
+from token import *
 
 
 def get_token_from_input(source):
