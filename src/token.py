@@ -4,9 +4,10 @@ class Token:
 
 
 class OpenTagToken(Token):
-    def __init__(self, tag):
+    def __init__(self, tag, attributes):
         super().__init__()
         self.tag = tag
+        self.attributes = attributes
 
 
 class CloseTagToken(Token):

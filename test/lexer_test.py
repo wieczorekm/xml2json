@@ -55,6 +55,15 @@ class LexerTest(unittest.TestCase):
         self._assertTextToken(lexer.get_next_token(), "text")
         self._assertCloseTagToken(lexer.get_next_token(), "sample")
 
+    def test_tag_for_open_tag_with_attribute(self):
+        token = get_token_from_input('<sample attr="value">')
+        self._assertOpenTagToken(token, "sample")
+
+    def test_attribute_for_open_tag_with_attribute(self):
+        token = get_token_from_input('<sample attr="value">')
+        self.assertEqual(len(token.attributes), 1)
+        self.assertEqual(token.attributes['attr'], 'value')
+
     def _assertOpenTagToken(self, token, token_tag):
         self.assertIsInstance(token, OpenTagToken)
         self.assertEqual(token.tag, token_tag)
