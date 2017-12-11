@@ -27,3 +27,8 @@ class SingleTagToken(Token):
         super().__init__()
         self.tag = tag
         self.attributes = attributes
+
+
+class EndOfTextToken(Token):
+    def __init__(self):
+        super().__init__()

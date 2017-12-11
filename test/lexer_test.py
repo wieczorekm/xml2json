@@ -48,7 +48,7 @@ class LexerTest(unittest.TestCase):
         self._assertCloseTagToken(lexer.get_next_token(), "first")
         self._assertCloseTagToken(lexer.get_next_token(), "second")
 
-    def test_simple_xml(self):
+    def test_xml_1(self):
         source = "<sample>text</sample>"
         lexer = Lexer(source)
         self._assertOpenTagToken(lexer.get_next_token(), "sample")
@@ -83,6 +83,59 @@ class LexerTest(unittest.TestCase):
         self.assertEqual(len(token.attributes), 2)
         self.assertEqual(token.attributes['one'], '1')
         self.assertEqual(token.attributes['two'], '2')
+
+    def test_trims_whitespaces_in_opening_tag_at_end(self):
+        tokens = [get_token_from_input('<sample >'),
+                  get_token_from_input('<sample  >'),
+                  get_token_from_input('<sample\t>'),
+                  get_token_from_input('<sample\n>'),
+                  get_token_from_input('<sample  \n \t  \t>')]
+        for token in tokens:
+            self.assertEqual(token.tag, "sample")
+
+    def test_trims_whitespaces_in_opening_tag_at_begin(self):
+        tokens = [get_token_from_input('< sample>'),
+                  get_token_from_input('<  sample>'),
+                  get_token_from_input('<\tsample>'),
+                  get_token_from_input('<\t\n\nsample>')]
+        for token in tokens:
+            self.assertEqual(token.tag, "sample")
+
+    def test_trims_whitespaces_between_attributes(self):
+        tokens = [get_token_from_input('<sample  one="1" two="2"/>'),
+                  get_token_from_input('<sample  one ="1" two="2"/>'),
+                  get_token_from_input('<sample  one = "1" two="2"/>'),
+                  get_token_from_input('<sample  one = "1"   two="2"/>'),
+                  get_token_from_input('<sample  one = "1"   two=\n"2" />'),
+                  get_token_from_input('<sample  one = "1"   two=\n"2" >')]
+        for token in tokens:
+            self.assertEqual(token.tag, "sample")
+            self.assertEqual(len(token.attributes), 2)
+            self.assertEqual(token.attributes['one'], '1')
+            self.assertEqual(token.attributes['two'], '2')
+
+    def test_trims_whitespaces_in_closing_tag(self):
+        tokens = [get_token_from_input('</sample >'),
+                  get_token_from_input('</ sample>')]
+        for token in tokens:
+            self.assertEqual(token.tag, "sample")
+
+    def test_trims_whitespaces_at_beginning(self):
+        token = get_token_from_input('  <sample>')
+        self._assertOpenTagToken(token, "sample")
+
+    def test_returns_end_of_text_token_at_end(self):
+        source = "<sample>"
+        lexer = Lexer(source)
+        lexer.get_next_token()
+        token = lexer.get_next_token()
+        self.assertIsInstance(token, EndOfTextToken)
+
+    def test_trims_whitespaces_in_single_tag(self):
+        tokens = [get_token_from_input('<sample />'),
+                  get_token_from_input('< sample/>')]
+        for token in tokens:
+            self.assertEqual(token.tag, "sample")
 
     def _assertOpenTagToken(self, token, token_tag):
         self.assertIsInstance(token, OpenTagToken)
