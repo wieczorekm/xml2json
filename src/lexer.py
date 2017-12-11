@@ -12,7 +12,7 @@ class Lexer:
     def get_next_token(self):
         if self.cursor == len(self.source):
             return EndOfTextToken()
-        self.trim_whitespaces()
+        trimmed = self.trim_whitespaces()
         # close tag
         if self.source[self.cursor:self.cursor+2] == '</':
             self.cursor += 2
@@ -29,7 +29,8 @@ class Lexer:
             return self.get_open_tag()
         # text
         else:
-            value = ""
+            # adding trimmed whitespaces to preserve them as text
+            value = trimmed
             while self.source[self.cursor] != "<":
                 value += self.source[self.cursor]
                 self.cursor += 1
@@ -102,5 +103,8 @@ class Lexer:
 
 
     def trim_whitespaces(self):
+        trimmed = ""
         while self.source[self.cursor] in WHITESPACES:
+            trimmed += self.source[self.cursor]
             self.cursor += 1
+        return trimmed

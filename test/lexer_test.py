@@ -150,6 +150,18 @@ class LexerTest(unittest.TestCase):
         self.assertEqual(len(token.attributes), 1)
         self.assertEqual(token.attributes['attr'], "1")
 
+    def test_recognizes_nested_tag_after_whitespace(self):
+        source = "<first> <second>"
+        lexer = Lexer(source)
+        lexer.get_next_token()
+        self._assertOpenTagToken(lexer.get_next_token(), "second")
+
+    def test_recognizes_text_after_whitespace(self):
+        source = "<first> second</first>"
+        lexer = Lexer(source)
+        lexer.get_next_token()
+        self._assertTextToken(lexer.get_next_token(), " second")
+
     def _assertOpenTagToken(self, token, token_tag):
         self.assertIsInstance(token, OpenTagToken)
         self.assertEqual(token.tag, token_tag)
