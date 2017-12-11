@@ -1,7 +1,7 @@
 from lexer import *
 import sys
 
-if len(sys.argv) == 2 :
+if len(sys.argv) == 2:
     f = open(sys.argv[1], 'r')
     content = f.read()
 
@@ -10,6 +10,8 @@ if len(sys.argv) == 2 :
     while not isinstance(token, EndOfTextToken):
         print(token)
         token = lexer.get_next_token()
+    print(token)
+
 
 else:
     print("Usage: python main.py <file_to_parse>")

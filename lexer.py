@@ -10,14 +10,20 @@ class Lexer:
         self.cursor = 0
 
     def get_next_token(self):
+        try:
+            return self.do_get_next_token()
+        except EndOfTextException:
+            return EndOfTextToken()
+
+    def do_get_next_token(self):
         if self.cursor == len(self.source):
             return EndOfTextToken()
         trimmed = self.trim_whitespaces()
-        if self.source[self.cursor:self.cursor+4] == '<!--':
+        if self.source[self.cursor:self.cursor + 4] == '<!--':
             return self.read_comment()
-        elif self.source[self.cursor:self.cursor+2] == '</':
+        elif self.source[self.cursor:self.cursor + 2] == '</':
             return self.read_close_tag()
-        elif self.source[self.cursor:self.cursor+2] == '<?':
+        elif self.source[self.cursor:self.cursor + 2] == '<?':
             return self.read_prolog_tag()
         elif self.source[self.cursor] == '<':
             return self.read_open_tag()
@@ -133,6 +139,8 @@ class Lexer:
     def trim_whitespaces(self):
         trimmed = ""
         while self.source[self.cursor] in WHITESPACES:
+            if self.cursor == len(self.source)-1:
+                raise EndOfTextException()
             trimmed += self.source[self.cursor]
             self.cursor += 1
         return trimmed
@@ -142,3 +150,8 @@ class LexerException(Exception):
     def __init__(self, message):
         super(LexerException, self).__init__()
         self.message = message
+
+
+class EndOfTextException(Exception):
+    def __init__(self):
+        super(EndOfTextException, self).__init__()
