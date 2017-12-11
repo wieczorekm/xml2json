@@ -3,17 +3,27 @@ class Token:
         pass
 
 
-class OpenTagToken(Token):
-    def __init__(self, tag, attributes):
+class TagToken(Token):
+    def __init__(self, tag):
         super().__init__()
+        self.tag = tag
+
+
+class AttributeToken(TagToken):
+    def __init__(self, tag, attributes):
+        super().__init__(tag)
         self.tag = tag
         self.attributes = attributes
 
 
-class CloseTagToken(Token):
+class OpenTagToken(AttributeToken):
+    def __init__(self, tag, attributes):
+        super().__init__(tag, attributes)
+
+
+class CloseTagToken(TagToken):
     def __init__(self, tag):
-        super().__init__()
-        self.tag = tag
+        super().__init__(tag)
 
 
 class TextToken(Token):
@@ -22,11 +32,9 @@ class TextToken(Token):
         self.value = value
 
 
-class SingleTagToken(Token):
+class SingleTagToken(AttributeToken):
     def __init__(self, tag, attributes):
-        super().__init__()
-        self.tag = tag
-        self.attributes = attributes
+        super().__init__(tag, attributes)
 
 
 class EndOfTextToken(Token):
@@ -34,8 +42,6 @@ class EndOfTextToken(Token):
         super().__init__()
 
 
-class PrologTagToken(Token):
+class PrologTagToken(AttributeToken):
     def __init__(self, tag, attributes):
-        super().__init__()
-        self.tag = tag
-        self.attributes = attributes
+        super().__init__(tag, attributes)
