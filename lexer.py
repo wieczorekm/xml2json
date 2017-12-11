@@ -14,6 +14,8 @@ class Lexer:
             return self.do_get_next_token()
         except EndOfTextException:
             return EndOfTextToken()
+        except IndexError:
+            raise LexerException("Unrecognized error")
 
     def do_get_next_token(self):
         if self.cursor == len(self.source):
