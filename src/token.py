@@ -32,3 +32,10 @@ class SingleTagToken(Token):
 class EndOfTextToken(Token):
     def __init__(self):
         super().__init__()
+
+
+class PrologTagToken(Token):
+    def __init__(self, tag, attributes):
+        super().__init__()
+        self.tag = tag
+        self.attributes = attributes

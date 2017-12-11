@@ -137,6 +137,19 @@ class LexerTest(unittest.TestCase):
         for token in tokens:
             self.assertEqual(token.tag, "sample")
 
+    def test_type_prolog(self):
+        token = get_token_from_input('<?xml ?>')
+        self.assertIsInstance(token, PrologTagToken)
+
+    def test_tag_prolog(self):
+        token = get_token_from_input('<?xml ?>')
+        self.assertEqual(token.tag, "xml")
+
+    def test_attributes_prolog(self):
+        token = get_token_from_input('<?xml attr="1"  ?>')
+        self.assertEqual(len(token.attributes), 1)
+        self.assertEqual(token.attributes['attr'], "1")
+
     def _assertOpenTagToken(self, token, token_tag):
         self.assertIsInstance(token, OpenTagToken)
         self.assertEqual(token.tag, token_tag)

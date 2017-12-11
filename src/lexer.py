@@ -16,8 +16,13 @@ class Lexer:
         # close tag
         if self.source[self.cursor:self.cursor+2] == '</':
             self.cursor += 2
-            tag = self.get_close_tag()
-            return CloseTagToken(tag)
+            return self.get_close_tag()
+
+        #prolog tag
+        elif self.source[self.cursor:self.cursor+2] == '<?':
+            self.cursor += 2
+            return self.get_prolog_tag()
+
         # open tag
         elif self.source[self.cursor] == '<':
             self.cursor += 1
@@ -41,14 +46,25 @@ class Lexer:
                 break
         #todo check if this is >
         self.cursor += 1
-        return tag
+        return CloseTagToken(tag)
 
     def get_open_tag(self):
+        tag, attributes = self.read_tag_and_attributes(in_prolog=False)
+        if self.source[self.cursor] == "/":
+            self.cursor += 2
+            return SingleTagToken(tag, attributes)
+        else:
+            self.cursor += 1
+            return OpenTagToken(tag, attributes)
+
+    def read_tag_and_attributes(self, in_prolog):
         self.trim_whitespaces()
         tag = ""
         attributes = {}
         reading_tag = True
-        while self.source[self.cursor] != ">" and self.source[self.cursor] != "/":
+
+        before_last_char = "?" if in_prolog else "/"
+        while self.source[self.cursor] != ">" and self.source[self.cursor] != before_last_char:
             if self.source[self.cursor] in WHITESPACES:
                 reading_tag = False
                 self.trim_whitespaces()
@@ -63,12 +79,12 @@ class Lexer:
                     if self.source[self.cursor] in WHITESPACES:
                         self.trim_whitespaces()
 
-                #todo check if this is =
+                # todo check if this is =
                 self.cursor += 1
 
                 self.trim_whitespaces()
 
-                #todo check if this is "
+                # todo check if this is "
                 self.cursor += 1
                 attribute_value = ""
                 while self.source[self.cursor] != "\"":
@@ -77,12 +93,13 @@ class Lexer:
 
                 attributes[attribute_name] = attribute_value
             self.cursor += 1
-        if self.source[self.cursor] == "/":
-            self.cursor += 2
-            return SingleTagToken(tag, attributes)
-        else:
-            self.cursor += 1
-            return OpenTagToken(tag, attributes)
+        return tag, attributes
+
+    def get_prolog_tag(self):
+        tag, attributes = self.read_tag_and_attributes(in_prolog=True)
+        self.cursor += 2
+        return PrologTagToken(tag, attributes)
+
 
     def trim_whitespaces(self):
         while self.source[self.cursor] in WHITESPACES:
