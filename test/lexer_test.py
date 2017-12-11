@@ -64,6 +64,17 @@ class LexerTest(unittest.TestCase):
         self.assertEqual(len(token.attributes), 1)
         self.assertEqual(token.attributes['attr'], 'value')
 
+    def test_tag_for_open_tag_with_two_attributes(self):
+        token = get_token_from_input('<sample attr="value" second-attr="another">')
+        self._assertOpenTagToken(token, "sample")
+
+    def test_attributes_for_open_tag_with_two_attributes(self):
+        token = get_token_from_input('<sample attr="value" second-attr="another">')
+        self.assertEqual(len(token.attributes), 2)
+        self.assertEqual(token.attributes['attr'], 'value')
+        self.assertEqual(token.attributes['second-attr'], 'another')
+
+
     def _assertOpenTagToken(self, token, token_tag):
         self.assertIsInstance(token, OpenTagToken)
         self.assertEqual(token.tag, token_tag)
