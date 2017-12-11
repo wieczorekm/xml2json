@@ -74,6 +74,15 @@ class LexerTest(unittest.TestCase):
         self.assertEqual(token.attributes['attr'], 'value')
         self.assertEqual(token.attributes['second-attr'], 'another')
 
+    def test_type_single_tag(self):
+        token = get_token_from_input('<sample/>')
+        self._assertSingleTagToken(token, "sample")
+
+    def test_attributes_for_single_tag(self):
+        token = get_token_from_input('<sample one="1" two="2"/>')
+        self.assertEqual(len(token.attributes), 2)
+        self.assertEqual(token.attributes['one'], '1')
+        self.assertEqual(token.attributes['two'], '2')
 
     def _assertOpenTagToken(self, token, token_tag):
         self.assertIsInstance(token, OpenTagToken)
@@ -86,6 +95,10 @@ class LexerTest(unittest.TestCase):
     def _assertTextToken(self, token, token_value):
         self.assertIsInstance(token, TextToken)
         self.assertEqual(token.value, token_value)
+
+    def _assertSingleTagToken(self, token, token_tag):
+        self.assertIsInstance(token, SingleTagToken)
+        self.assertEqual(token.tag, token_tag)
 
 
 if __name__ == '__main__':

@@ -20,3 +20,10 @@ class TextToken(Token):
     def __init__(self, value):
         super().__init__()
         self.value = value
+
+
+class SingleTagToken(Token):
+    def __init__(self, tag, attributes):
+        super().__init__()
+        self.tag = tag
+        self.attributes = attributes

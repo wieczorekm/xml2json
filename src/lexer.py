@@ -16,8 +16,7 @@ class Lexer:
         # open tag
         elif self.source[self.cursor] == '<':
             self.cursor += 1
-            tag, attributes = self.get_open_tag()
-            return OpenTagToken(tag, attributes)
+            return self.get_open_tag()
         # text
         else:
             value = ""
@@ -38,7 +37,7 @@ class Lexer:
         tag = ""
         attributes = {}
         reading_tag = True
-        while self.source[self.cursor] != ">":
+        while self.source[self.cursor] != ">" and self.source[self.cursor] != "/":
             if self.source[self.cursor] == ' ':
                 reading_tag = False
                 self.cursor += 1
@@ -60,5 +59,9 @@ class Lexer:
 
                 attributes[attribute_name] = attribute_value
             self.cursor += 1
-        self.cursor += 1
-        return tag, attributes
+        if self.source[self.cursor] == "/":
+            self.cursor += 2
+            return SingleTagToken(tag, attributes)
+        else:
+            self.cursor += 1
+            return OpenTagToken(tag, attributes)
