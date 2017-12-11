@@ -45,3 +45,9 @@ class EndOfTextToken(Token):
 class PrologTagToken(AttributeToken):
     def __init__(self, tag, attributes):
         super().__init__(tag, attributes)
+
+
+class CommentToken(Token):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value

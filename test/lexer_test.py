@@ -1,6 +1,6 @@
 import unittest
 
-from src.lexer import Lexer
+from src.lexer import Lexer, LexerException
 from src.token import *
 
 
@@ -162,6 +162,19 @@ class LexerTest(unittest.TestCase):
         lexer.get_next_token()
         self._assertTextToken(lexer.get_next_token(), " second")
 
+    def test_parse_comment_at_beginning(self):
+        token = get_token_from_input("<!-- comment -->")
+        self.assertIsInstance(token, CommentToken)
+
+    def test_missing_equals_sign_in_attribute(self):
+        self.assertRaisesWithMessage("Attribute assignment = expected", get_token_from_input, '<sample attr "value">')
+
+    def test_missing_quote_sign_in_attribute(self):
+        self.assertRaisesWithMessage("Attribute assignment \" expected", get_token_from_input, '<sample attr =\'value">')
+
+    def test_too_short_comment_close(self):
+        self.assertRaisesWithMessage("Closing comment tag --> expected", get_token_from_input, "<!-- comment ->")
+
     def _assertOpenTagToken(self, token, token_tag):
         self.assertIsInstance(token, OpenTagToken)
         self.assertEqual(token.tag, token_tag)
@@ -177,6 +190,13 @@ class LexerTest(unittest.TestCase):
     def _assertSingleTagToken(self, token, token_tag):
         self.assertIsInstance(token, SingleTagToken)
         self.assertEqual(token.tag, token_tag)
+
+    def assertRaisesWithMessage(self, msg, func, *args, **kwargs):
+        try:
+            func(*args, **kwargs)
+            self.fail()
+        except LexerException as inst:
+            self.assertEqual(inst.message, msg)
 
 
 if __name__ == '__main__':

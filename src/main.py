@@ -6,9 +6,9 @@ if len(sys.argv) == 2 :
     content = f.read()
 
     lexer = Lexer(content)
-    tokens = lexer.tokenize()
-
-    for token in tokens:
+    token = lexer.get_next_token()
+    while not isinstance(token, EndOfTextToken):
         print(token)
+
 else:
     print("Usage: python main.py <file_to_parse>")
