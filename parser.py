@@ -1,4 +1,5 @@
 from parser_elements import *
+from tokens import *
 
 
 class Parser:
@@ -7,13 +8,16 @@ class Parser:
         self.lexer = lexer
 
     def get_document_tree(self):
-        opentag = self.lexer.get_next_token()
-        text = self.lexer.get_next_token()
-        closetag = self.lexer.get_next_token()
-        if opentag.tag != closetag.tag:
-            raise ParserException("Opentag tag: " + opentag.tag + " doesn't match closetag tag: " + closetag.tag)
-        xml = Xml(opentag.tag, text.value)
+        first_tag = self.lexer.get_next_token()
 
+        if isinstance(first_tag, OpenTagToken):
+            text = self.lexer.get_next_token()
+            closetag = self.lexer.get_next_token()
+            if first_tag.tag != closetag.tag:
+                raise ParserException("Opentag tag: " + first_tag.tag + " doesn't match closetag tag: " + closetag.tag)
+            xml = Xml(first_tag.tag, text.value, first_tag.attributes)
+        else:  # for now it is SingleTag
+            xml = Xml(first_tag.tag, None, first_tag.attributes)
         return DocumentTree(xml)
 
 
