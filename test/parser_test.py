@@ -40,6 +40,31 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(document_tree.xml.attributes["one"], "1")
         self.assertEqual(document_tree.xml.attributes["two"], "2")
 
+    def test_works_for_nested_xml(self):
+        lexer = self._create_lexer_mock([OpenTagToken("outer", {"outer": "1"}),
+                                         OpenTagToken("inner", {"inner": "1"}),
+                                         TextToken("text"),
+                                         CloseTagToken("inner"),
+                                         CloseTagToken("outer")])
+        parser = Parser(lexer)
+        document_tree = parser.get_document_tree()
+        self.assertEqual(document_tree.xml.tag, "outer")
+        self.assertEqual(document_tree.xml.value, None)
+        self.assertEqual(document_tree.xml.attributes["outer"], "1")
+        self.assertEqual(document_tree.xml.xmls[0].tag, "inner")
+        self.assertEqual(document_tree.xml.xmls[0].attributes["inner"], "1")
+        self.assertEqual(document_tree.xml.xmls[0].value, "text")
+
+    def test_works_for_nested_single_xml_tag(self):
+        lexer = self._create_lexer_mock([OpenTagToken("outer", {"outer": "1"}),
+                                         SingleTagToken("inner", {"inner": "1"}),
+                                         CloseTagToken("outer")])
+        parser = Parser(lexer)
+        document_tree = parser.get_document_tree()
+        self.assertEqual(document_tree.xml.tag, "outer")
+        self.assertEqual(document_tree.xml.attributes["outer"], "1")
+        self.assertEqual(document_tree.xml.xmls[0].tag, "inner")
+        self.assertEqual(document_tree.xml.xmls[0].attributes["inner"], "1")
 
     def _create_lexer_mock(self, return_values):
         return_values.append(EndOfTextToken())
