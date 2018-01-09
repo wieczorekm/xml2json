@@ -19,8 +19,10 @@ class Parser:
             inner_text, inner_xmls, close_tag = self._resolve_xml_inside(next_tag)
             self._validate_tags(first_tag, close_tag)
             xml = Xml(first_tag.tag, inner_text, first_tag.attributes, inner_xmls)
-        else:  # for now it is SingleTag
+        elif isinstance(first_tag, SingleTagToken):
             xml = Xml(first_tag.tag, None, first_tag.attributes, [])
+        else:
+            self._raise_unexpected_token_eror([OpenTagToken, SingleTagToken], first_tag)
 
         probably_end_of_text = self._get_next_token_ignoring_comments()
         if not isinstance(probably_end_of_text, EndOfTextToken):
@@ -39,18 +41,24 @@ class Parser:
             if isinstance(next_tag, SingleTagToken):
                 xmls.append(Xml(next_tag.tag, None, next_tag.attributes, []))
                 next_tag = self._get_next_token_ignoring_comments()
-            else:  # assuming that this is OpenTag
+            elif isinstance(next_tag, OpenTagToken):
                 inner_next_tag = self._get_next_token_ignoring_comments()
                 if isinstance(inner_next_tag, TextToken):
-                    inner_close_tag = self._get_next_token_ignoring_comments()  # assuming this is CloseTag
+                    inner_close_tag = self._get_next_token_ignoring_comments()
+                    if not isinstance(inner_close_tag, CloseTagToken):
+                        self._raise_unexpected_token_eror([CloseTagToken], inner_close_tag)
                     self._validate_tags(next_tag, inner_close_tag)
                     xmls.append(Xml(next_tag.tag, inner_next_tag.value, next_tag.attributes, []))
-                else: # assuming that this is OpenTag
+                elif isinstance(inner_next_tag, OpenTagToken):
                     open_tag = next_tag
                     inner_text, inner_xmls, next_tag = self._resolve_xml_inside(inner_next_tag)
                     self._validate_tags(open_tag, next_tag)
                     xmls.append(Xml(open_tag.tag, inner_text, open_tag.attributes, inner_xmls))
+                else:
+                    self._raise_unexpected_token_eror([OpenTagToken, TextToken], inner_next_tag)
                 next_tag = self._get_next_token_ignoring_comments()
+            else:
+                self._raise_unexpected_token_eror([OpenTagToken, SingleTagToken], next_tag)
         return xmls, next_tag
 
     def _get_next_token_ignoring_comments(self):
@@ -63,6 +71,9 @@ class Parser:
         if first_tag.tag != close_tag.tag:
             raise ParserException(
                 "Opentag tag: " + first_tag.tag + " doesn't match closetag tag: " + close_tag.tag)
+
+    def _raise_unexpected_token_eror(self, expected, actual):
+        raise ParserException("Unexpected token")
 
 
 class ParserException(Exception):

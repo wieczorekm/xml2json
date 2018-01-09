@@ -83,8 +83,8 @@ class ParserTest(unittest.TestCase):
 
     def test_sample_xml_with_nested_structure(self):
         document_tree = self._get_document_tree_from_parser(
-            [OpenTagToken("1", {}), OpenTagToken("2", {}), CloseTagToken("2"), OpenTagToken("3", {}),
-             OpenTagToken("4", {}), CloseTagToken("4"), SingleTagToken("5", {}), CloseTagToken("3"),
+            [OpenTagToken("1", {}), OpenTagToken("2", {}), TextToken("text"), CloseTagToken("2"), OpenTagToken("3", {}),
+             OpenTagToken("4", {}), TextToken("text"), CloseTagToken("4"), SingleTagToken("5", {}), CloseTagToken("3"),
              CloseTagToken("1")])
         self.assertEqual(document_tree.xml.tag, "1")
         self.assertEqual(document_tree.xml.xmls[0].tag, "2")
