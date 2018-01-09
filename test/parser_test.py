@@ -107,6 +107,14 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(document_tree.prolog.attributes["attr"], "1")
         self.assertEqual(document_tree.xml.tag, "tag")
 
+    def test_parses_simple_xml_with_comments(self):
+        document_tree = self._get_document_tree_from_parser(
+            [CommentToken(""), OpenTagToken("sample", {}), CommentToken(""), TextToken("text"), CommentToken(""),
+             CloseTagToken("sample"), CommentToken("")])
+        self.assertIsInstance(document_tree, DocumentTree)
+        self.assertIsNone(document_tree.prolog)
+        self.assertEqual(document_tree.xml.tag, "sample")
+        self.assertEqual(document_tree.xml.value, "text")
 
     def _get_document_tree_from_parser(self, tokens):
         lexer = self._create_lexer_mock(tokens)
