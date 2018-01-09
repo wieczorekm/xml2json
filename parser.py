@@ -17,6 +17,12 @@ class Parser:
             xml = Xml(first_tag.tag, inner_text, first_tag.attributes, inner_xmls)
         else:  # for now it is SingleTag
             xml = Xml(first_tag.tag, None, first_tag.attributes, [])
+
+        probably_end_of_text = self.lexer.get_next_token()
+        if not isinstance(probably_end_of_text, EndOfTextToken):
+            raise ParserException("Expected EndOfTextToken, got " + str(probably_end_of_text.__class__))
+
+
         return DocumentTree(xml)
 
     def _resolve_xml_inside(self, next_tag):
