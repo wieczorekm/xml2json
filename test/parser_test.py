@@ -99,6 +99,15 @@ class ParserTest(unittest.TestCase):
         # TODO assert message
         self.assertRaises(ParserException, parser.get_document_tree)
 
+    def test_parses_with_prolog(self):
+        document_tree = self._get_document_tree_from_parser(
+            [PrologTagToken("xml", {"attr": "1"}), SingleTagToken("tag", {})])
+        self.assertIsInstance(document_tree.prolog, Prolog)
+        self.assertEqual(document_tree.prolog.tag, "xml")
+        self.assertEqual(document_tree.prolog.attributes["attr"], "1")
+        self.assertEqual(document_tree.xml.tag, "tag")
+
+
     def _get_document_tree_from_parser(self, tokens):
         lexer = self._create_lexer_mock(tokens)
         parser = Parser(lexer)

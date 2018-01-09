@@ -9,7 +9,11 @@ class Parser:
 
     def get_document_tree(self):
         first_tag = self.lexer.get_next_token()
+        prolog = None
 
+        if isinstance(first_tag, PrologTagToken):
+            prolog = Prolog(first_tag.tag, first_tag.attributes)
+            first_tag = self.lexer.get_next_token()
         if isinstance(first_tag, OpenTagToken):
             next_tag = self.lexer.get_next_token()
             inner_text, inner_xmls, close_tag = self._resolve_xml_inside(next_tag)
@@ -21,9 +25,7 @@ class Parser:
         probably_end_of_text = self.lexer.get_next_token()
         if not isinstance(probably_end_of_text, EndOfTextToken):
             raise ParserException("Expected EndOfTextToken, got " + str(probably_end_of_text.__class__))
-
-
-        return DocumentTree(xml)
+        return DocumentTree(xml, prolog)
 
     def _resolve_xml_inside(self, next_tag):
         if isinstance(next_tag, TextToken):
