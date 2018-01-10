@@ -18,7 +18,7 @@ class LexerTest(unittest.TestCase):
 
     def test_open_of_single_tag(self):
         token = get_token_from_input("</")
-        self.assertIsInstance(token, OpenOfSingleTagToken)
+        self.assertIsInstance(token, OpenOfTagWithSlashToken)
 
     def test_close_of_tag(self):
         token = get_token_from_input("/>")
@@ -39,14 +39,48 @@ class LexerTest(unittest.TestCase):
 
     def test_open_tag(self):
         lexer = Lexer("<tag>")
-        open_tag = lexer.get_next_token()
+        open_token = lexer.get_next_token()
         id = lexer.get_next_token()
-        close_tag = lexer.get_next_token()
-        self.assertIsInstance(open_tag, OpenOfTagToken)
+        close_token = lexer.get_next_token()
+        self.assertIsInstance(open_token, OpenOfTagToken)
         self.assertIsInstance(id, IdToken)
         self.assertEqual(id.value, "tag")
-        self.assertIsInstance(close_tag, CloseOfTagToken)
+        self.assertIsInstance(close_token, CloseOfTagToken)
 
+    def test_close_tag(self):
+        lexer = Lexer("<tag/>")
+        open_token = lexer.get_next_token()
+        id = lexer.get_next_token()
+        close_token = lexer.get_next_token()
+        self.assertIsInstance(open_token, OpenOfTagToken)
+        self.assertIsInstance(id, IdToken)
+        self.assertEqual(id.value, "tag")
+        self.assertIsInstance(close_token, CloseOfTagWithSlashToken)
+
+    def test_with_spaces(self):
+        lexer = Lexer("  </   tag  >  ")
+        open_token = lexer.get_next_token()
+        id = lexer.get_next_token()
+        close_token = lexer.get_next_token()
+        self.assertIsInstance(open_token, OpenOfTagWithSlashToken)
+        self.assertIsInstance(id, IdToken)
+        self.assertEqual(id.value, "tag")
+        self.assertIsInstance(close_token, CloseOfTagToken)
+
+    def test_tag_with_attr(self):
+        lexer = Lexer('<tag a="1"/>')
+        self.assertIsInstance(lexer.get_next_token(), OpenOfTagToken)
+        tag = lexer.get_next_token()
+        self.assertIsInstance(tag, IdToken)
+        self.assertEqual(tag.value, "tag")
+        attr = lexer.get_next_token()
+        self.assertIsInstance(attr, IdToken)
+        self.assertEqual(attr.value, "a")
+        self.assertIsInstance(lexer.get_next_token(), EqualsToken)
+        attr_value = lexer.get_next_token()
+        self.assertIsInstance(attr_value, QuotedIdToken)
+        self.assertEqual(attr_value.value, "1")
+        self.assertIsInstance(lexer.get_next_token(), CloseOfTagWithSlashToken)
 
 
 if __name__ == '__main__':

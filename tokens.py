@@ -8,7 +8,7 @@ class OpenOfTagToken(Token):
         super().__init__()
 
 
-class OpenOfSingleTagToken(Token):
+class OpenOfTagWithSlashToken(Token):
     def __init__(self):
         super().__init__()
 
@@ -29,6 +29,12 @@ class EqualsToken(Token):
 
 
 class IdToken(Token):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
+
+
+class QuotedIdToken(Token):
     def __init__(self, value):
         super().__init__()
         self.value = value
