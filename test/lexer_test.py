@@ -113,9 +113,17 @@ class LexerTest(unittest.TestCase):
         token = get_token_from_input("<?")
         self.assertIsInstance(token, OpenOfPrologTagToken)
 
-    def test_prolog_open_token(self):
+    def test_prolog_close_token(self):
         token = get_token_from_input("?>")
         self.assertIsInstance(token, CloseOfPrologTagToken)
+
+    def test_comment_open_token(self):
+        token = get_token_from_input("<!--")
+        self.assertIsInstance(token, OpenOfCommentTagToken)
+
+    def test_comment_close_token(self):
+        token = get_token_from_input("-->")
+        self.assertIsInstance(token, CloseOfCommentTagToken)
 
 
 

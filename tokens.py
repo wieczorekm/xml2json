@@ -55,3 +55,13 @@ class CloseOfPrologTagToken(Token):
         super().__init__()
 
 
+class OpenOfCommentTagToken(Token):
+    def __init__(self):
+        super().__init__()
+
+
+class CloseOfCommentTagToken(Token):
+    def __init__(self):
+        super().__init__()
+
+

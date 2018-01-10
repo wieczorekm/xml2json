@@ -45,16 +45,21 @@ class Lexer:
             return self._do_get_equals_token()
         elif self.source[self.cursor] == '"':
             return self._do_get_quoted_id_token()
+        elif self.source[self.cursor] == "-":
+            return self._do_get_close_of_comment_tag()
         else:
             return self._do_get_id_token()
 
     def _do_get_open_token(self):
-        if self.cursor == len(self.source) - 1 or self.source[self.cursor + 1] not in ["/", "?"]:
+        if self.cursor == len(self.source) - 1 or self.source[self.cursor + 1] not in ["/", "?", "!"]:
             self.cursor += 1
             return OpenOfTagToken()
         elif self.source[self.cursor + 1] == "?":
             self.cursor += 2
             return OpenOfPrologTagToken()
+        elif self.source[self.cursor + 1 : self.cursor+4] == "!--":
+            self.cursor += 4
+            return OpenOfCommentTagToken()
         else:
             self.cursor += 2
             return OpenOfTagWithSlashToken()
@@ -86,6 +91,12 @@ class Lexer:
 
     def _do_get_quoted_id_token(self):
         return QuotedIdToken(self._read_quoted_id_from_input())
+
+    def _do_get_close_of_comment_tag(self):
+        if self.source[self.cursor + 1:self.cursor + 3] == "->":
+            return CloseOfCommentTagToken()
+        else:
+            self._throw_unexpected_token_exception()
 
     def _read_id_from_input(self):
         id = ""
