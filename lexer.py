@@ -10,14 +10,45 @@ class Lexer:
         self.cursor = 0
 
     def get_next_token(self):
-        if self.source[0:2] == "</":
-            return OpenOfSingleTagToken()
-        elif self.source[0:2] == "/>":
-            return CloseOfTagToken()
-        elif self.source[0:1] == ">":
-            return CloseOfSingleTagToken()
-        return OpenOfTagToken()
+        try:
+            return self.do_get_next_token()
+        except IndexError:
+            self.throw_unexpected_token_exception()
 
+    def do_get_next_token(self):
+        if self.source[self.cursor] == "<":
+            if self.source[self.cursor+1] == "/":
+                self.cursor += 2
+                return OpenOfSingleTagToken()
+            else:
+                self.cursor += 1
+                return OpenOfTagToken()
+        elif self.source[self.cursor] == "/":
+            if self.source[self.cursor+1] == ">":
+                self.cursor += 2
+                return CloseOfTagWithSlashToken()
+
+            else:
+                self.throw_unexpected_token_exception()
+        elif self.source[self.cursor] == ">":
+            self.cursor += 1
+            return CloseOfTagToken()
+        elif self.source[self.cursor] == "=":
+            self.cursor += 1
+            return EqualsToken()
+        else:
+            id = self.get_id_from_input()
+            return IdToken(id)
+
+    def get_id_from_input(self):
+        id = ""
+        while self.source[self.cursor] not in WHITESPACES and self.source[self.cursor] != ">":
+            id += self.source[self.cursor]
+            self.cursor += 1
+        return id
+
+    def throw_unexpected_token_exception(self):
+        raise LexerException("Unexpected end of text near " + str(self.cursor) + " char")
 
 
 class LexerException(Exception):

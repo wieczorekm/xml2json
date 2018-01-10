@@ -18,6 +18,17 @@ class CloseOfTagToken(Token):
         super().__init__()
 
 
-class CloseOfSingleTagToken(Token):
+class CloseOfTagWithSlashToken(Token):
     def __init__(self):
         super().__init__()
+
+
+class EqualsToken(Token):
+    def __init__(self):
+        super().__init__()
+
+
+class IdToken(Token):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
