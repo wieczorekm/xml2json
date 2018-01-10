@@ -38,3 +38,8 @@ class QuotedIdToken(Token):
     def __init__(self, value):
         super().__init__()
         self.value = value
+
+
+class EndOfTextToken(Token):
+    def __init__(self):
+        super().__init__()

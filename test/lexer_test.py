@@ -1,6 +1,6 @@
 import unittest
 
-from lexer import Lexer, LexerException
+from lexer import Lexer
 from tokens import *
 
 
@@ -81,6 +81,14 @@ class LexerTest(unittest.TestCase):
         self.assertIsInstance(attr_value, QuotedIdToken)
         self.assertEqual(attr_value.value, "1")
         self.assertIsInstance(lexer.get_next_token(), CloseOfTagWithSlashToken)
+
+    def test_end_of_text_token(self):
+        lexer = Lexer("<tag>")
+        lexer.get_next_token()
+        lexer.get_next_token()
+        lexer.get_next_token()
+        end_of_text_token = lexer.get_next_token()
+        self.assertIsInstance(end_of_text_token, EndOfTextToken)
 
 
 if __name__ == '__main__':
