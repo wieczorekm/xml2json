@@ -83,12 +83,33 @@ class LexerTest(unittest.TestCase):
         self.assertIsInstance(lexer.get_next_token(), CloseOfTagWithSlashToken)
 
     def test_end_of_text_token(self):
-        lexer = Lexer("<tag>")
-        lexer.get_next_token()
-        lexer.get_next_token()
+        lexer = Lexer("<")
         lexer.get_next_token()
         end_of_text_token = lexer.get_next_token()
         self.assertIsInstance(end_of_text_token, EndOfTextToken)
+
+    def test_get_string_method(self):
+        lexer = Lexer("> text <")
+        self.assertIsInstance(lexer.get_next_token(), CloseOfTagToken)
+        text = lexer.get_text_until_open_of_tag()
+        self.assertEqual(text, " text ")
+        self.assertIsInstance(lexer.get_next_token(), OpenOfTagToken)
+
+    def test_check_whitespace_method_with_text(self):
+        lexer = Lexer("> text <")
+        self.assertIsInstance(lexer.get_next_token(), CloseOfTagToken)
+        flag, buffer = lexer.is_next_nonempty_char_an_open_of_tag()
+        self.assertEqual(flag, False)
+        self.assertEqual(buffer, " ")
+
+    def test_check_whitespace_method_without_text(self):
+        lexer = Lexer("> <")
+        self.assertIsInstance(lexer.get_next_token(), CloseOfTagToken)
+        flag, buffer = lexer.is_next_nonempty_char_an_open_of_tag()
+        self.assertEqual(flag, True)
+        self.assertIsInstance(lexer.get_next_token(), OpenOfTagToken)
+
+
 
 
 if __name__ == '__main__':

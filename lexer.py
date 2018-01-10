@@ -4,7 +4,6 @@ WHITESPACES = (' ', '\t', '\n')
 
 
 class Lexer:
-
     def __init__(self, source):
         self.source = source
         self.cursor = 0
@@ -16,6 +15,21 @@ class Lexer:
             return self._do_get_next_token()
         except IndexError:
             self._throw_unexpected_token_exception()
+
+    def get_text_until_open_of_tag(self):
+        text = ""
+        while self.source[self.cursor] != '<':
+            text += self.source[self.cursor]
+            self.cursor += 1
+        return text
+
+    # also returns read whitespaces as they may be necessary for parser
+    def is_next_nonempty_char_an_open_of_tag(self):
+        buffer = ""
+        while self.source[self.cursor] in WHITESPACES:
+            buffer += self.source[self.cursor]
+            self.cursor += 1
+        return self.source[self.cursor] == "<", buffer
 
     def _do_get_next_token(self):
         self._shift_cursor_igonoring_whitespaces()
@@ -39,7 +53,6 @@ class Lexer:
         else:
             self.cursor += 2
             return OpenOfTagWithSlashToken()
-
 
     def _do_get_close_with_slash_token(self):
         if self.source[self.cursor + 1] == ">":
