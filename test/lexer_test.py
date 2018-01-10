@@ -13,7 +13,7 @@ def get_token_from_input(source):
 class LexerTest(unittest.TestCase):
 
     def test_open_token(self):
-        token = get_token_from_input("< ")
+        token = get_token_from_input("<")
         self.assertIsInstance(token, OpenOfTagToken)
 
     def test_open_of_single_tag(self):
@@ -109,6 +109,13 @@ class LexerTest(unittest.TestCase):
         self.assertEqual(flag, True)
         self.assertIsInstance(lexer.get_next_token(), OpenOfTagToken)
 
+    def test_prolog_open_token(self):
+        token = get_token_from_input("<?")
+        self.assertIsInstance(token, OpenOfPrologTagToken)
+
+    def test_prolog_open_token(self):
+        token = get_token_from_input("?>")
+        self.assertIsInstance(token, CloseOfPrologTagToken)
 
 
 

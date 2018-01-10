@@ -43,3 +43,15 @@ class QuotedIdToken(Token):
 class EndOfTextToken(Token):
     def __init__(self):
         super().__init__()
+
+
+class OpenOfPrologTagToken(Token):
+    def __init__(self):
+        super().__init__()
+
+
+class CloseOfPrologTagToken(Token):
+    def __init__(self):
+        super().__init__()
+
+

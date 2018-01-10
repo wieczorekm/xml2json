@@ -37,6 +37,8 @@ class Lexer:
             return self._do_get_open_token()
         elif self.source[self.cursor] == "/":
             return self._do_get_close_with_slash_token()
+        elif self.source[self.cursor] == "?":
+            return self._do_get_close_prolog_token()
         elif self.source[self.cursor] == ">":
             return self._do_get_close_token()
         elif self.source[self.cursor] == "=":
@@ -47,9 +49,12 @@ class Lexer:
             return self._do_get_id_token()
 
     def _do_get_open_token(self):
-        if self.cursor == len(self.source) - 1 or self.source[self.cursor + 1] != "/":
+        if self.cursor == len(self.source) - 1 or self.source[self.cursor + 1] not in ["/", "?"]:
             self.cursor += 1
             return OpenOfTagToken()
+        elif self.source[self.cursor + 1] == "?":
+            self.cursor += 2
+            return OpenOfPrologTagToken()
         else:
             self.cursor += 2
             return OpenOfTagWithSlashToken()
@@ -58,6 +63,13 @@ class Lexer:
         if self.source[self.cursor + 1] == ">":
             self.cursor += 2
             return CloseOfTagWithSlashToken()
+        else:
+            self._throw_unexpected_token_exception()
+
+    def _do_get_close_prolog_token(self):
+        if self.source[self.cursor + 1] == ">":
+            self.cursor += 2
+            return CloseOfPrologTagToken()
         else:
             self._throw_unexpected_token_exception()
 
