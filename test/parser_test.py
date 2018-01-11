@@ -26,12 +26,24 @@ class ParserTest(unittest.TestCase):
              CloseOfTagWithSlashToken()])
         self.assertEqual(document_tree.xml.tag, "xml")
 
-    def test_parses_single_xml_with_Prolog(self):
+    def test_parses_single_xml_with_prolog(self):
         document_tree = self._get_document_tree_from_parser(
-            [OpenOfPrologTagToken(), IdToken("prolog"), CloseOfPrologTagToken(), OpenOfTagToken(), IdToken("xml"),
+            [OpenOfPrologTagToken(), IdToken("prolog"), IdToken("attr"), EqualsToken(), QuotedIdToken("1"),
+             IdToken("attr2"), EqualsToken(), QuotedIdToken("2"), CloseOfPrologTagToken(), OpenOfTagToken(),
+             IdToken("xml"),
              CloseOfTagWithSlashToken()])
         self.assertEqual(document_tree.prolog.tag, "prolog")
         self.assertEqual(document_tree.xml.tag, "xml")
+        self.assertEqual(document_tree.prolog.attributes["attr"], "1")
+        self.assertEqual(document_tree.prolog.attributes["attr2"], "2")
+
+    def test_parses_single_xml_with_attr(self):
+        document_tree = self._get_document_tree_from_parser(
+            [OpenOfTagToken(), IdToken("xml"), IdToken("attr"), EqualsToken(), QuotedIdToken("1"), IdToken("attr2"),
+             EqualsToken(), QuotedIdToken("2"), CloseOfTagWithSlashToken()])
+        self.assertEqual(document_tree.xml.tag, "xml")
+        self.assertEqual(document_tree.xml.attributes["attr"], "1")
+        self.assertEqual(document_tree.xml.attributes["attr2"], "2")
 
     def _get_document_tree_from_parser(self, return_values):
         lexer = self._create_lexer_mock(return_values)

@@ -11,10 +11,11 @@ class DocumentTree(ParserElement):
 
 
 class Xml(ParserElement):
-    def __init__(self, tag, value):
+    def __init__(self, tag, value, attributes):
         super().__init__()
         self.tag = tag
         self.value = value
+        self.attributes = attributes
 
 
 class BeginOfOpenTag(ParserElement):
@@ -24,9 +25,10 @@ class BeginOfOpenTag(ParserElement):
 
 
 class Prolog(ParserElement):
-    def __init__(self, tag):
+    def __init__(self, tag, attributes):
         super().__init__()
         self.tag = tag
+        self.attributes = attributes
 
 
 class CloseTag(ParserElement):
@@ -40,3 +42,12 @@ class RestOfXml(ParserElement):
         super().__init__()
         self.tag = tag
         self.value = value
+
+
+class Attribute(ParserElement):
+    def __init__(self, name, value):
+        super().__init__()
+        self.name = name
+        self.value = value
+
+
