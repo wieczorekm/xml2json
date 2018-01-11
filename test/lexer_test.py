@@ -121,10 +121,12 @@ class LexerTest(unittest.TestCase):
         token = get_token_from_input("<!--")
         self.assertIsInstance(token, OpenOfCommentTagToken)
 
-    def test_comment_close_token(self):
-        token = get_token_from_input("-->")
-        self.assertIsInstance(token, CloseOfCommentTagToken)
-
+    def test_get_comment_method(self):
+        lexer = Lexer("<!-- comment --> <")
+        self.assertIsInstance(lexer.get_next_token(), OpenOfCommentTagToken)
+        self.assertEqual(lexer.get_comment(), " comment ")
+        self.assertIsInstance(lexer.get_next_token(), CloseOfCommentTagToken)
+        self.assertIsInstance(lexer.get_next_token(), OpenOfTagToken)
 
 
 if __name__ == '__main__':

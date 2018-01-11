@@ -31,6 +31,13 @@ class Lexer:
             self.cursor += 1
         return self.source[self.cursor] == "<", buffer
 
+    def get_comment(self):
+        comment_body = ""
+        while self.source[self.cursor:self.cursor+3] != "-->":
+            comment_body += self.source[self.cursor]
+            self.cursor += 1
+        return comment_body
+
     def _do_get_next_token(self):
         self._shift_cursor_igonoring_whitespaces()
         if self.source[self.cursor] == "<":
@@ -94,6 +101,7 @@ class Lexer:
 
     def _do_get_close_of_comment_tag(self):
         if self.source[self.cursor + 1:self.cursor + 3] == "->":
+            self.cursor += 3
             return CloseOfCommentTagToken()
         else:
             self._throw_unexpected_token_exception()
