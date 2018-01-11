@@ -81,6 +81,12 @@ class Parser:
 
     def _get_next_token_from_lexer(self):
         self.current_token = self.lexer.get_next_token()
+        if isinstance(self.current_token, OpenOfCommentTagToken):
+            print("Read comment: " + self.lexer.get_comment())
+            self.current_token = self.lexer.get_next_token()
+            if not isinstance(self.current_token, CloseOfCommentTagToken):
+                self._raise_unexpected_token_error()
+            self.current_token = self.lexer.get_next_token()
         return self.current_token
 
     def _raise_unexpected_token_error(self):

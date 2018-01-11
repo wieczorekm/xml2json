@@ -20,6 +20,12 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(document_tree.xml.tag, "xml")
         self.assertEqual(document_tree.xml.value, "text")
 
+    def test_parses_single_xml_with_comment(self):
+        document_tree = self._get_document_tree_from_parser(
+            [OpenOfCommentTagToken(), CloseOfCommentTagToken(), OpenOfTagToken(), IdToken("xml"), CloseOfTagWithSlashToken()])
+        self.assertEqual(document_tree.xml.tag, "xml")
+
+
     def _get_document_tree_from_parser(self, return_values):
         lexer = self._create_lexer_mock(return_values)
         parser = Parser(lexer)
@@ -32,7 +38,9 @@ class ParserTest(unittest.TestCase):
         lexer.get_next_token = Mock()
         lexer.is_next_nonempty_char_an_open_of_tag = Mock()
         lexer.get_text_until_open_of_tag = Mock()
+        lexer.get_comment = Mock()
         lexer.get_next_token.side_effect = return_values
         lexer.is_next_nonempty_char_an_open_of_tag.side_effect = [(False, "")]
         lexer.get_text_until_open_of_tag.side_effect = ["text"]
+        lexer.get_comment.side_effect = ["comment"]
         return lexer
