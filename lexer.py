@@ -51,7 +51,9 @@ class Lexer:
         elif self.source[self.cursor] == "=":
             return self._do_get_equals_token()
         elif self.source[self.cursor] == '"':
-            return self._do_get_quoted_id_token()
+            return self._do_get_double_quoted_id_token()
+        elif self.source[self.cursor] == "\'":
+            return self._do_get_single_quoted_id_token()
         elif self.source[self.cursor] == "-":
             return self._do_get_close_of_comment_tag()
         else:
@@ -96,8 +98,11 @@ class Lexer:
     def _do_get_id_token(self):
         return IdToken(self._read_id_from_input())
 
-    def _do_get_quoted_id_token(self):
-        return QuotedIdToken(self._read_quoted_id_from_input())
+    def _do_get_double_quoted_id_token(self):
+        return QuotedIdToken(self._read_quoted_id_from_input_until_char("\""))
+
+    def _do_get_single_quoted_id_token(self):
+        return QuotedIdToken(self._read_quoted_id_from_input_until_char("\'"))
 
     def _do_get_close_of_comment_tag(self):
         if self.source[self.cursor + 1:self.cursor + 3] == "->":
@@ -113,10 +118,10 @@ class Lexer:
             self.cursor += 1
         return id
 
-    def _read_quoted_id_from_input(self):
+    def _read_quoted_id_from_input_until_char(self, char):
         quoted_id = ""
         self.cursor += 1
-        while self.source[self.cursor] != '"':
+        while self.source[self.cursor] != char:
             quoted_id += self.source[self.cursor]
             self.cursor += 1
         self.cursor += 1

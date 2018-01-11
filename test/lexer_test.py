@@ -128,6 +128,11 @@ class LexerTest(unittest.TestCase):
         self.assertIsInstance(lexer.get_next_token(), CloseOfCommentTagToken)
         self.assertIsInstance(lexer.get_next_token(), OpenOfTagToken)
 
+    def test_get_single_quoted_id(self):
+        lexer = Lexer("\'id\'")
+        token = lexer.get_next_token()
+        self.assertIsInstance(token, QuotedIdToken)
+        self.assertEqual(token.value, "id")
 
 if __name__ == '__main__':
     unittest.main()
