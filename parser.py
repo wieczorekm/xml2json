@@ -16,6 +16,9 @@ class Parser:
         xml = self._parse_xml()
         if xml is None:
             self._raise_unexpected_token_error()
+        self._get_next_token_from_lexer()
+        if not isinstance(self.current_token, EndOfTextToken):
+            self._raise_unexpected_token_error()
         return DocumentTree(xml, prolog)
 
     def _parse_prolog(self):
@@ -42,8 +45,7 @@ class Parser:
         if rest_of_xml is None:
             self._raise_unexpected_token_error()
         if begin_of_open_tag.tag != rest_of_xml.tag:
-            print(begin_of_open_tag.tag + " and " + rest_of_xml.tag + " are different")
-            self._raise_unexpected_token_error()
+            self._raise_not_equal_ids(begin_of_open_tag, rest_of_xml)
         return Xml(begin_of_open_tag.tag, rest_of_xml.value, casted_attrs, rest_of_xml.xmls)
 
     def _parse_multiple_attributes(self):
@@ -115,14 +117,21 @@ class Parser:
     def _get_next_token_from_lexer(self):
         self.current_token = self.lexer.get_next_token()
         if isinstance(self.current_token, OpenOfCommentTagToken):
-            print("Read comment: " + self.lexer.get_comment())
+            # comments are skipped
+            print("[PARSER] Read comment: " + self.lexer.get_comment())
             self.current_token = self.lexer.get_next_token()
             if not isinstance(self.current_token, CloseOfCommentTagToken):
                 self._raise_unexpected_token_error()
             self.current_token = self.lexer.get_next_token()
         return self.current_token
 
+    def _raise_not_equal_ids(self, open_id, close_id):
+        print("[PARSER] " + open_id.tag + " and " + close_id.tag + " are different near " + str(
+            self.lexer.get_current_cursor_pos()))
+        raise ParserException("Ids not equal")
+
     def _raise_unexpected_token_error(self):
+        print("[PARSER] Unexpected token near " + str(self.lexer.get_current_cursor_pos()))
         raise ParserException("Unexpected token")
 
 

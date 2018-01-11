@@ -9,6 +9,7 @@ class Lexer:
         self.cursor = 0
 
     def get_next_token(self):
+        self._shift_cursor_igonoring_whitespaces()
         if self.cursor == len(self.source):
             return EndOfTextToken()
         try:
@@ -38,8 +39,10 @@ class Lexer:
             self.cursor += 1
         return comment_body
 
+    def get_current_cursor_pos(self):
+        return self.cursor
+
     def _do_get_next_token(self):
-        self._shift_cursor_igonoring_whitespaces()
         if self.source[self.cursor] == "<":
             return self._do_get_open_token()
         elif self.source[self.cursor] == "/":
@@ -128,10 +131,11 @@ class Lexer:
         return quoted_id
 
     def _throw_unexpected_token_exception(self):
-        raise LexerException("Unexpected end of text near " + str(self.cursor) + " char")
+        print("[LEXER] Unexpected end of text near " + str(self.cursor) + " char")
+        raise LexerException("Unexpected end of text")
 
     def _shift_cursor_igonoring_whitespaces(self):
-        while self.source[self.cursor] in WHITESPACES:
+        while self.cursor < len(self.source) and self.source[self.cursor] in WHITESPACES:
             self.cursor += 1
 
 

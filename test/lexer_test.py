@@ -134,5 +134,6 @@ class LexerTest(unittest.TestCase):
         self.assertIsInstance(token, QuotedIdToken)
         self.assertEqual(token.value, "id")
 
+
 if __name__ == '__main__':
     unittest.main()
