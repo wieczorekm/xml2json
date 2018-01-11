@@ -4,23 +4,12 @@ class ParserElement:
 
 
 class DocumentTree(ParserElement):
-    def __init__(self, xml, prolog):
+    def __init__(self, xml):
         super().__init__()
         self.xml = xml
-        self.prolog = prolog
 
 
 class Xml(ParserElement):
-    def __init__(self, tag, value, attributes, xmls):
+    def __init__(self, id):
         super().__init__()
-        self.tag = tag
-        self.value = value
-        self.attributes = attributes
-        self.xmls = xmls
-
-
-class Prolog(ParserElement):
-    def __init__(self, tag, attributes):
-        super().__init__()
-        self.tag = tag
-        self.attributes = attributes
+        self.id = id
