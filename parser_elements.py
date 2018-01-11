@@ -4,9 +4,10 @@ class ParserElement:
 
 
 class DocumentTree(ParserElement):
-    def __init__(self, xml):
+    def __init__(self, xml, prolog):
         super().__init__()
         self.xml = xml
+        self.prolog = prolog
 
 
 class Xml(ParserElement):

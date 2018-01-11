@@ -22,9 +22,16 @@ class ParserTest(unittest.TestCase):
 
     def test_parses_single_xml_with_comment(self):
         document_tree = self._get_document_tree_from_parser(
-            [OpenOfCommentTagToken(), CloseOfCommentTagToken(), OpenOfTagToken(), IdToken("xml"), CloseOfTagWithSlashToken()])
+            [OpenOfCommentTagToken(), CloseOfCommentTagToken(), OpenOfTagToken(), IdToken("xml"),
+             CloseOfTagWithSlashToken()])
         self.assertEqual(document_tree.xml.tag, "xml")
 
+    def test_parses_single_xml_with_Prolog(self):
+        document_tree = self._get_document_tree_from_parser(
+            [OpenOfPrologTagToken(), IdToken("prolog"), CloseOfPrologTagToken(), OpenOfTagToken(), IdToken("xml"),
+             CloseOfTagWithSlashToken()])
+        self.assertEqual(document_tree.prolog.tag, "prolog")
+        self.assertEqual(document_tree.xml.tag, "xml")
 
     def _get_document_tree_from_parser(self, return_values):
         lexer = self._create_lexer_mock(return_values)

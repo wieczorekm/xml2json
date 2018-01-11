@@ -10,24 +10,25 @@ class Parser:
 
     def get_document_tree(self):
         self._get_next_token_from_lexer()
-        # prolog = self._parse_prolog()
+        prolog = self._parse_prolog()
+        if prolog is not None:
+            self._get_next_token_from_lexer()
         xml = self._parse_xml()
         if xml is None:
             self._raise_unexpected_token_error()
-        return DocumentTree(xml)
+        return DocumentTree(xml, prolog)
 
-    # def _parse_prolog(self):
-    #     if not isinstance(self.current_token, OpenOfPrologTagToken):
-    #         return None
-    #     id = self._get_next_token_from_lexer()
-    #     if not isinstance(self.current_token, IdToken):
-    #         self._raise_unexpected_token_error()
-    #     # attrs
-    #     self._get_next_token_from_lexer()
-    #     if not isinstance(self.current_token, CloseOfPrologTagToken):
-    #         self._raise_unexpected_token_error()
-    #     self._get_next_token_from_lexer()
-    #     return Prolog(id.value)
+    def _parse_prolog(self):
+        if not isinstance(self.current_token, OpenOfPrologTagToken):
+            return None
+        id = self._get_next_token_from_lexer()
+        if not isinstance(self.current_token, IdToken):
+            self._raise_unexpected_token_error()
+        # attrs
+        self._get_next_token_from_lexer()
+        if not isinstance(self.current_token, CloseOfPrologTagToken):
+            self._raise_unexpected_token_error()
+        return Prolog(id.value)
 
     def _parse_xml(self):
         begin_of_open_tag = self._parse_begin_of_open_tag()
