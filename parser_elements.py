@@ -10,6 +10,8 @@ class DocumentTree(ParserElement):
 
 
 class Xml(ParserElement):
-    def __init__(self, id):
+    def __init__(self, id, value):
         super().__init__()
         self.id = id
+        self.value = value
+

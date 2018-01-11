@@ -9,15 +9,30 @@ from tokens import *
 class ParserTest(unittest.TestCase):
 
     def test_parses_single_xml(self):
-        lexer = self._create_lexer_mock([OpenOfTagToken, IdToken("xml"), CloseOfTagWithSlashToken])
-        parser = Parser(lexer)
-        document_tree = parser.get_document_tree()
+        document_tree = self._get_document_tree_from_parser(
+            [OpenOfTagToken(), IdToken("xml"), CloseOfTagWithSlashToken()])
         self.assertEqual(document_tree.xml.id, "xml")
 
+    def test_parses_xml_with_text(self):
+        document_tree = self._get_document_tree_from_parser(
+            [OpenOfTagToken(), IdToken("xml"), CloseOfTagToken(), OpenOfTagWithSlashToken(), IdToken("xml"),
+             CloseOfTagToken()])
+        self.assertEqual(document_tree.xml.id, "xml")
+        self.assertEqual(document_tree.xml.value, "text")
+
+    def _get_document_tree_from_parser(self, return_values):
+        lexer = self._create_lexer_mock(return_values)
+        parser = Parser(lexer)
+        document_tree = parser.get_document_tree()
+        return document_tree
 
     def _create_lexer_mock(self, return_values):
         # return_values.append(EndOfTextToken())
         lexer = Lexer(None)
         lexer.get_next_token = Mock()
+        lexer.is_next_nonempty_char_an_open_of_tag = Mock()
+        lexer.get_text_until_open_of_tag = Mock()
         lexer.get_next_token.side_effect = return_values
+        lexer.is_next_nonempty_char_an_open_of_tag.side_effect = [(False, "")]
+        lexer.get_text_until_open_of_tag.side_effect = ["text"]
         return lexer
