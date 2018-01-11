@@ -11,11 +11,12 @@ class DocumentTree(ParserElement):
 
 
 class Xml(ParserElement):
-    def __init__(self, tag, value, attributes):
+    def __init__(self, tag, value, attributes, xmls):
         super().__init__()
         self.tag = tag
         self.value = value
         self.attributes = attributes
+        self.xmls = xmls
 
 
 class BeginOfOpenTag(ParserElement):
@@ -38,10 +39,11 @@ class CloseTag(ParserElement):
 
 
 class RestOfXml(ParserElement):
-    def __init__(self, tag, value):
+    def __init__(self, tag, value, xmls):
         super().__init__()
         self.tag = tag
         self.value = value
+        self.xmls = xmls
 
 
 class Attribute(ParserElement):

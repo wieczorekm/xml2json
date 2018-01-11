@@ -37,14 +37,14 @@ class Parser:
         self._get_next_token_from_lexer()
         casted_attrs = self._parse_multiple_attributes()
         if isinstance(self.current_token, CloseOfTagWithSlashToken):
-            return Xml(begin_of_open_tag.tag, None, casted_attrs)
+            return Xml(begin_of_open_tag.tag, None, casted_attrs, [])
         rest_of_xml = self._parse_rest_of_xml()
         if rest_of_xml is None:
             self._raise_unexpected_token_error()
         if begin_of_open_tag.tag != rest_of_xml.tag:
             print(begin_of_open_tag.tag + " and " + rest_of_xml.tag + " are different")
             self._raise_unexpected_token_error()
-        return Xml(begin_of_open_tag.tag, rest_of_xml.value, casted_attrs)
+        return Xml(begin_of_open_tag.tag, rest_of_xml.value, casted_attrs, rest_of_xml.xmls)
 
     def _parse_multiple_attributes(self):
         attribute = self._parse_attr()
@@ -58,17 +58,28 @@ class Parser:
     def _parse_rest_of_xml(self):
         if not isinstance(self.current_token, CloseOfTagToken):
             return None
-        # only text for now
-        flag, whitespaces = self.lexer.is_next_nonempty_char_an_open_of_tag()
-        text = None
-        if not flag:
-            text = self.lexer.get_text_until_open_of_tag()
-            text = whitespaces + text
-        self._get_next_token_from_lexer()
+        text, xmls = self._parse_xmls_or_text()
         close_tag = self._parse_close_tag()
         if close_tag is None:
             self._raise_unexpected_token_error()
-        return RestOfXml(close_tag.tag, text)
+        return RestOfXml(close_tag.tag, text, xmls)
+
+    def _parse_xmls_or_text(self):
+        flag, whitespaces = self.lexer.is_next_nonempty_char_an_open_of_tag()
+        text = None
+        xmls = []
+        if not flag:
+            text = self.lexer.get_text_until_open_of_tag()
+            text = whitespaces + text
+            self._get_next_token_from_lexer()
+        else:
+            self._get_next_token_from_lexer()
+            xml = self._parse_xml()
+            while xml is not None:
+                xmls.append(xml)
+                self._get_next_token_from_lexer()
+                xml = self._parse_xml()
+        return text, xmls
 
     def _parse_begin_of_open_tag(self):
         if not isinstance(self.current_token, OpenOfTagToken):
