@@ -11,13 +11,13 @@ class ParserTest(unittest.TestCase):
     def test_parses_single_xml(self):
         document_tree = self._get_document_tree_from_parser(
             [OpenOfTagToken(), IdToken("xml"), CloseOfTagWithSlashToken()])
-        self.assertEqual(document_tree.xml.id, "xml")
+        self.assertEqual(document_tree.xml.tag, "xml")
 
     def test_parses_xml_with_text(self):
         document_tree = self._get_document_tree_from_parser(
             [OpenOfTagToken(), IdToken("xml"), CloseOfTagToken(), OpenOfTagWithSlashToken(), IdToken("xml"),
              CloseOfTagToken()])
-        self.assertEqual(document_tree.xml.id, "xml")
+        self.assertEqual(document_tree.xml.tag, "xml")
         self.assertEqual(document_tree.xml.value, "text")
 
     def _get_document_tree_from_parser(self, return_values):
