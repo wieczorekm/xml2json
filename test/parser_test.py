@@ -65,7 +65,7 @@ class ParserTest(unittest.TestCase):
         return document_tree
 
     def _create_lexer_mock(self, return_values, flag):
-        # return_values.append(EndOfTextToken())
+        return_values.append(EndOfTextToken())
         lexer = Lexer(None)
         lexer.get_next_token = Mock()
         lexer.is_next_nonempty_char_an_open_of_tag = Mock()
