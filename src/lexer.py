@@ -1,4 +1,4 @@
-from tokens import *
+from src.tokens import *
 
 WHITESPACES = (' ', '\t', '\n')
 

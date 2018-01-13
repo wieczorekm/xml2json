@@ -1,7 +1,7 @@
 import unittest
 
-from lexer import Lexer
-from tokens import *
+from src.lexer import Lexer
+from src.tokens import *
 
 
 def get_token_from_input(source):

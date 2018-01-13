@@ -1,5 +1,5 @@
-from parser_elements import *
-from tokens import *
+from src.parser_elements import *
+from src.tokens import *
 
 
 class Parser:

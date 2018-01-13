@@ -1,5 +1,5 @@
-from lexer import Lexer
-from parser import Parser
+from src.lexer import Lexer
+from src.parser import Parser
 import sys
 
 

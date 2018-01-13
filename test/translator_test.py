@@ -1,8 +1,8 @@
 import unittest
 import string
 
-from parser_elements import *
-from translator import Translator
+from src.parser_elements import *
+from src.translator import Translator
 
 
 class TranslatorTest(unittest.TestCase):

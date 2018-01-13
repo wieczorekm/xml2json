@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import Mock
 
-from lexer import Lexer
-from parser import *
-from tokens import *
+from src.lexer import Lexer
+from src.parser import Parser
+from src.tokens import *
 
 
 class ParserTest(unittest.TestCase):
