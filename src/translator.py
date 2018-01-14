@@ -19,4 +19,15 @@ class Translator:
             inner += '}\n'
             return inner
         else:
-            return '"' + xml.value + '"\n'
+            return self.translate_body(xml)
+
+    def translate_body(self, xml):
+        return '"' + xml.value + '"\n' if not xml.attributes else self.translate_body_with_attributes(xml)
+
+    def translate_body_with_attributes(self, xml):
+        body = '{\n'
+        for attr in sorted(xml.attributes):
+            body += '\t"attr-' + attr + '": "' + xml.attributes[attr] + '",\n'
+        body += '"#text": "' + xml.value + '"\n'
+        body += '}\n'
+        return body

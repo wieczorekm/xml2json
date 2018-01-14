@@ -1,5 +1,5 @@
-import unittest
 import string
+import unittest
 
 from src.parser_elements import *
 from src.translator import Translator
@@ -34,6 +34,17 @@ class TranslatorTest(unittest.TestCase):
                                                     }
                                                 }
                                             }''')
+
+    def test_with_attributes(self):
+        xml = Xml("xml", "value", {"1": "val1", "2": "val2"}, [])
+        self.assert_without_whitespaces(self.get_json_from_translator(xml),
+                                        ''' {
+                                            "xml":{
+                                                "attr-1":"val1",
+                                                "attr-2":"val2",
+                                                "#text":"value"
+                                            }
+                                        }''')
 
     def get_json_from_translator(self, xml, prolog=None):
         document_tree = DocumentTree(xml, prolog)
