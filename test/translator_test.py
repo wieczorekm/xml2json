@@ -9,10 +9,25 @@ class TranslatorTest(unittest.TestCase):
 
     def test_simple_xml(self):
         xml = Xml("xml", "value", None, [])
-        document_tree = DocumentTree(xml, None)
+        self.assert_without_whitespaces(self.get_json_from_translator(xml), '{"xml":"value"}')
+
+    def test_nested_xml(self):
+        inner_xmls = [Xml("inner1", "value1", None, []), Xml("inner2", "value2", None, [])]
+        xml = Xml("outer", None, None, inner_xmls)
+        self.assert_without_whitespaces(self.get_json_from_translator(xml),
+                                        ''' {
+                                                "outer":{
+                                                    "inner1":"value1",
+                                                    "inner2":"value2"
+                                                }
+                                            }''')
+
+
+    def get_json_from_translator(self, xml, prolog=None):
+        document_tree = DocumentTree(xml, prolog)
         translator = Translator(document_tree)
         json = translator.get_json()
-        self.assert_without_whitespaces(json, '{"xml":"value"}')
+        return json
 
     def assert_without_whitespaces(self, actual, expected):
         to_remove = str.maketrans('', '', string.whitespace)
