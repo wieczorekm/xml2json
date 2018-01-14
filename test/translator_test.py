@@ -22,6 +22,18 @@ class TranslatorTest(unittest.TestCase):
                                                 }
                                             }''')
 
+    def test_double_nested(self):
+        inner = Xml("inner", "value", None, [])
+        middle = Xml("middle", None, None, [inner])
+        outer = Xml("outer", None, None, [middle])
+        self.assert_without_whitespaces(self.get_json_from_translator(outer),
+                                        ''' {
+                                                "outer":{
+                                                    "middle": {
+                                                        "inner": "value"
+                                                    }
+                                                }
+                                            }''')
 
     def get_json_from_translator(self, xml, prolog=None):
         document_tree = DocumentTree(xml, prolog)
