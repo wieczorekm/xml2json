@@ -46,6 +46,19 @@ class TranslatorTest(unittest.TestCase):
                                             }
                                         }''')
 
+    def test_with_prolog(self):
+        prolog = Prolog("xml", {"1": "val1", "2": "val2"})
+        xml = Xml("xml", "value", None, [])
+        self.assert_without_whitespaces(self.get_json_from_translator(xml, prolog),
+                                        ''' {
+                                            "prolog":{
+                                                "1": "val1",
+                                                "2": "val2"
+                                            },
+                                            "xml": "value"
+                                        }''')
+
+
     def get_json_from_translator(self, xml, prolog=None):
         document_tree = DocumentTree(xml, prolog)
         translator = Translator(document_tree)

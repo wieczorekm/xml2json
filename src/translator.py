@@ -5,6 +5,8 @@ class Translator:
 
     def get_json(self):
         json = '{\n'
+        prolog = self.document_tree.prolog
+        json += self.translate_prolog(prolog) if prolog else ""
         xml = self.document_tree.xml
         json += '\t"' + xml.tag + '":' + self.translate_xml(xml)
         json += '}'
@@ -19,10 +21,7 @@ class Translator:
             inner += '}\n'
             return inner
         else:
-            return self.translate_body(xml)
-
-    def translate_body(self, xml):
-        return '"' + xml.value + '"\n' if not xml.attributes else self.translate_body_with_attributes(xml)
+            return '"' + xml.value + '"\n' if not xml.attributes else self.translate_body_with_attributes(xml)
 
     def translate_body_with_attributes(self, xml):
         body = '{\n'
@@ -31,3 +30,11 @@ class Translator:
         body += '"#text": "' + xml.value + '"\n'
         body += '}\n'
         return body
+
+    def translate_prolog(self, prolog):
+        prolog_as_string = '"prolog":{\n'
+        for idx, attr in enumerate(sorted(prolog.attributes)):
+            prolog_as_string += '"' + attr + '": "'+ prolog.attributes[attr]
+            prolog_as_string += '"\n' if idx == len(prolog.attributes) - 1 else '",\n'
+        prolog_as_string += "},\n"
+        return prolog_as_string
