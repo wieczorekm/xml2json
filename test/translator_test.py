@@ -1,6 +1,7 @@
 import string
 import unittest
 
+from json import loads
 from src.parser_elements import *
 from src.translator import Translator
 
@@ -61,7 +62,7 @@ class TranslatorTest(unittest.TestCase):
 
     def get_json_from_translator(self, xml, prolog=None):
         document_tree = DocumentTree(xml, prolog)
-        translator = Translator(document_tree)
+        translator = Translator(document_tree, loads('{}'))
         json = translator.get_json()
         return json
 
