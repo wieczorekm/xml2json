@@ -1,6 +1,9 @@
 class Translator:
-    def __init__(self, document_tree):
+    def __init__(self, document_tree, config):
         self.document_tree = document_tree
+        self.copy_attributes = config['copy_attributes']
+        self.attribute_prefix = config['attribute_prefix'] if 'attribute_prefix' in config else "attr-"
+        self.text_name = config['text_name'] if 'text_name' in config else "#text"
 
     def get_json(self):
         json = '{\n'
@@ -26,11 +29,12 @@ class Translator:
 
     def translate_body_with_attributes(self, xml, nest_level):
         body = '{\n'
-        for attr in sorted(xml.attributes):
-            body += "\t" * nest_level
-            body += '"attr-' + attr + '": "' + xml.attributes[attr] + '",\n'
+        if self.copy_attributes:
+            for attr in sorted(xml.attributes):
+                body += "\t" * nest_level
+                body += '"' + self.attribute_prefix + attr + '": "' + xml.attributes[attr] + '",\n'
         body += "\t" * nest_level
-        body += '"#text":' + self.get_xml_value(xml.value) + '\n'
+        body += '"' + self.text_name + '":' + self.get_xml_value(xml.value) + '\n'
         body += "\t" * (nest_level - 1)
         body += '}'
         return body
@@ -39,7 +43,7 @@ class Translator:
         prolog_as_string = '\t"prolog":{\n'
         for idx, attr in enumerate(sorted(prolog.attributes)):
             prolog_as_string += '\t\t"' + attr + '": "' + prolog.attributes[attr]
-            prolog_as_string += '"\n' if idx == len(prolog.attributes) - 1 else '\",\n'
+            prolog_as_string += '"\n' if idx == len(prolog.attributes) - 1 else '",\n'
         prolog_as_string += "\t},\n"
         return prolog_as_string
 
